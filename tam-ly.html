@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BỆNH VIỆN QUÂN Y 105 - TRẮC NGHIỆM TÂM LÝ</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .step { display: none; }
+        .step.active { display: block; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .print-container { border: none !important; box-shadow: none !important; max-w: 100% !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex justify-center p-4">
+
+    <div class="w-full max-w-3xl bg-white rounded-2xl shadow-lg border border-gray-200 flex flex-col overflow-hidden print-container">
+        
+        <header class="bg-blue-700 text-white p-5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-white text-blue-700 p-2 rounded-lg font-bold text-xl shadow-sm no-print">📋</div>
+                <div>
+                    <h1 class="font-bold text-xl tracking-wide uppercase">BỆNH VIỆN QUÂN Y 105</h1>
+                    <p class="text-xs text-blue-100 uppercase font-medium">Khoa Nội tâm thần kinh — Hệ thống trắc nghiệm lâm sàng</p>
+                </div>
+            </div>
+            <button id="btnPrint" onclick="window.print()" class="no-print bg-black/30 hover:bg-black/50 text-white text-xs font-bold py-2 px-4 rounded-xl opacity-40 cursor-not-allowed transition-all" disabled>
+                IN KẾT QUẢ (PDF)
+            </button>
+        </header>
+
+        <form id="mainForm" onsubmit="event.preventDefault();" class="p-6 flex-1 flex flex-col gap-6">
+            
+            <div id="step1" class="step active flex flex-col gap-5">
+                <div class="border-l-4 border-blue-700 pl-3 py-0.5">
+                    <h2 class="text-blue-900 font-bold uppercase text-sm tracking-wider">Hành chính người bệnh</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mã số bệnh án (MSBA)</label>
+                        <input type="text" id="patientId" value="MSBA-105" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm bg-gray-50 focus:outline-blue-600 font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Họ và tên bệnh nhân</label>
+                        <input type="text" id="patientName" placeholder="Nhập họ tên..." class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm bg-gray-50 focus:outline-blue-600 font-medium" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tuổi</label>
+                        <input type="number" id="patientAge" placeholder="Tuổi" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm bg-gray-50 focus:outline-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Giới tính</label>
+                        <select id="patientGender" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm bg-gray-50 focus:outline-blue-600 font-medium">
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Buồng</label>
+                        <input type="text" id="patientRoom" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm bg-gray-50 focus:outline-blue-600">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Giường</label>
+                        <input type="text" id="patientBed" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm bg-gray-50 focus:outline-blue-600">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Chẩn đoán lâm sàng sơ bộ</label>
+                    <input type="text" id="patientDiag" placeholder="F32 - Giai đoạn trầm cảm, lo âu,..." class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm bg-gray-50 focus:outline-blue-600">
+                </div>
+            </div>
+
+
+            <div id="step2" class="step flex flex-col gap-4">
+                <div class="flex bg-gray-200 p-1 rounded-xl text-xs font-bold text-gray-600 gap-1 sticky top-0 z-50 shadow-sm">
+                    <button type="button" id="tabBtn-beck" onclick="switchScale('beck')" class="flex-1 py-2 text-center bg-white rounded-lg shadow text-blue-700">THANG BECK</button>
+                    <button type="button" id="tabBtn-hamd" onclick="switchScale('hamd')" class="flex-1 py-2 text-center rounded-lg">HAMILTON TRẦM CẢM</button>
+                    <button type="button" id="tabBtn-hama" onclick="switchScale('hama')" class="flex-1 py-2 text-center rounded-lg">HAMILTON LO ÂU</button>
+                    <button type="button" id="tabBtn-zung" onclick="switchScale('zung')" class="flex-1 py-2 text-center rounded-lg">THANG ZUNG</button>
+                </div>
+
+                <div id="scaleArea-beck" class="scale-section flex flex-col gap-5 mt-2"></div>
+                <div id="scaleArea-hamd" class="scale-section hidden flex flex-col gap-5 mt-2"></div>
+                <div id="scaleArea-hama" class="scale-section hidden flex flex-col gap-5 mt-2"></div>
+                <div id="scaleArea-zung" class="scale-section hidden flex flex-col gap-5 mt-2"></div>
+            </div>
+
+
+            <div id="step3" class="step flex flex-col gap-6">
+                <div class="border-l-4 border-emerald-600 pl-3 py-0.5">
+                    <h2 class="text-emerald-900 font-bold uppercase text-sm tracking-wider">Kết quả trắc nghiệm tâm lý lâm sàng</h2>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 text-sm text-gray-700 grid grid-cols-2 gap-2">
+                    <p><strong>Bệnh nhân:</strong> <span id="outName" class="font-bold text-gray-900 uppercase"></span></p>
+                    <p><strong>Tuổi / Giới tính:</strong> <span id="outAge"></span> tuổi - <span id="outGender"></span></p>
+                    <p><strong>Mã số BA:</strong> <span id="outId"></span></p>
+                    <p><strong>Buồng/Giường:</strong> Buồng <span id="outRoom"></span> - Giường <span id="outBed"></span></p>
+                    <p class="col-span-2"><strong>Chẩn đoán:</strong> <span id="outDiag"></span></p>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <div class="border border-gray-200 rounded-xl p-4 flex justify-between items-center bg-gray-50" id="card-beck">
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-sm">THANG ĐÁNH GIÁ TRẦM CẢM BECK (BDI)</h4>
+                            <p class="text-xs font-semibold mt-1 text-gray-500" id="lbl-beck">Chưa có kết quả</p>
+                        </div>
+                        <span class="text-xl font-black text-blue-700" id="score-beck">0 đ</span>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-xl p-4 flex justify-between items-center bg-gray-50" id="card-hamd">
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-sm">THANG TRẦM CẢM HAMILTON (HAM-D)</h4>
+                            <p class="text-xs font-semibold mt-1 text-gray-500" id="lbl-hamd">Chưa có kết quả</p>
+                        </div>
+                        <span class="text-xl font-black text-blue-700" id="score-hamd">0 đ</span>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-xl p-4 flex justify-between items-center bg-gray-50" id="card-hama">
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-sm">THANG LO ÂU HAMILTON (HAM-A)</h4>
+                            <p class="text-xs font-semibold mt-1 text-gray-500" id="lbl-hama">Chưa có kết quả</p>
+                        </div>
+                        <span class="text-xl font-black text-blue-700" id="score-hama">0 đ</span>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-xl p-4 flex justify-between items-center bg-gray-50" id="card-zung">
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-sm">THANG ĐÁNH GIÁ LO ÂU ZUNG (SAS)</h4>
+                            <p class="text-xs font-semibold mt-1 text-gray-500" id="lbl-zung">Chưa có kết quả</p>
+                        </div>
+                        <span class="text-xl font-black text-blue-700" id="score-zung">0 đ</span>
+                    </div>
+                </div>
+
+                <div class="hidden print:flex justify-between mt-12 text-center text-sm">
+                    <div>
+                        <p class="font-bold">BÁC SĨ ĐIỀU TRỊ</p>
+                        <p class="text-xs text-gray-400 mt-12">(Ký và ghi rõ họ tên)</p>
+                    </div>
+                    <div>
+                        <p class="italic text-xs">Hà Nội, Ngày ..... Tháng ..... Năm 202...</p>
+                        <p class="font-bold mt-1">CÁN BỘ TRẮC NGHIỆM TÂM LÝ</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="no-print flex justify-between items-center pt-4 border-t border-gray-100 mt-auto">
+                <button type="button" id="btnPrev" onclick="movePage(-1)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold text-xs uppercase tracking-wide py-3 px-6 rounded-xl transition invisible">
+                    Quay lại
+                </button>
+                <button type="button" id="btnNext" onclick="movePage(1)" class="bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs uppercase tracking-wide py-3 px-6 rounded-xl transition shadow-md">
+                    Tiếp theo
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        let currentPage = 1;
+
+        // 1. NGHIỆM PHÁP BECK (21 câu - Thang điểm từ 0 đến 3)
+        const beckData = [
+            { id: 1, title: "Nỗi buồn", opts: ["Tôi không thấy buồn bã, chán nản.","Đôi lúc tôi cảm thấy buồn bã, chán nản.","Nhiều lúc tôi cũng cảm thấy buồn bã, chán nản.","Tôi rất buồn bã hoặc rất bất hạnh đến mức không thể chịu được."] },
+            { id: 2, title: "Bi quan về tương lai", opts: ["Tôi không nản lòng về tương lai.","Tôi cảm thấy nản lòng về tương lai hơn trước.","Tôi cảm thấy mình chẳng có gì mong đợi ở tương lai cả.","Tôi cảm thấy tương lai tuyệt vọng và tình hình chỉ có thể tiếp tục xấu đi."] },
+            { id: 3, title: "Cảm giác thất bại", opts: ["Tôi không thấy cuộc đời tôi bị thất bại.","Tôi thấy mình thất bại nhiều hơn những người khác.","Nhìn lại cuộc đời, tôi thấy mình đã có quá nhiều thất bại.","Tôi cảm thấy mình là một người hoàn toàn thất bại."] },
+            { id: 4, title: "Mất hứng thú", opts: ["Tôi vẫn còn thích thú với những điều mà trước đây tôi thường thích.","Tôi ít thấy thích những điều mà trước đây tôi vẫn thường ưa thích.","Tôi còn rất ít thích thú về những điều trước đây tôi vẫn thường thích.","Tôi không còn chút thích thú nào nữa."] },
+            { id: 5, title: "Cảm giác tội lỗi", opts: ["Tôi không cảm thấy có tội lỗi gì cả.","Phần nhiều những việc tôi đã làm tôi đều cảm thấy có tội.","Phần lớn thời gian tôi cảm thấy mình có tội.","Lúc nào tôi cũng cảm thấy mình có tội."] },
+            { id: 6, title: "Cảm giác bị trừng phạt", opts: ["Tôi không cảm thấy đang bị trừng phạt.","Tôi cảm thấy có lẽ mình đang bị trừng phạt.","Tôi mong chờ bị trừng phạt.","Tôi cảm thấy mình đang bị trừng phạt."] },
+            { id: 7, title: "Thất vọng về bản thân", opts: ["Tôi vẫn còn tin tưởng bản thân mình trước kia.","Tôi không còn tin tưởng vào bản thân.","Tôi thất vọng với bản thân.","Tôi ghét bản thân mình."] },
+            { id: 8, title: "Tự phê phán, đổ lỗi", opts: ["Tôi không phê phán hoặc đổ lỗi cho bản thân.","Tôi phê phán bản thân mình nhiều hơn trước kia.","Tôi phê phán bản thân về tất cả những lỗi lầm của mình.","Tôi đổ lỗi cho bản thân về tất cả mọi điều tồi tệ xảy ra."] },
+            { id: 9, title: "Ý nghĩ tự sát", opts: ["Tôi không có ý nghĩ tự sát.","Tôi có ý nghĩ tự sát nhưng không thực hiện.","Tôi muốn tự sát.","Nếu có cơ hội tôi sẽ tự sát."] },
+            { id: 10, title: "Khóc lóc", opts: ["Tôi không hay khóc.","Tôi hay khóc nhiều hơn trước.","Tôi thường hay khóc vì những điều nhỏ nhặt.","Tôi thấy muốn khóc nhưng không thể khóc được."] },
+            { id: 11, title: "Bồn chồn, căng thẳng", opts: ["Tôi không dễ bồn chồn và căng thẳng hơn thường lệ.","Tôi cảm thấy dễ bồn chồn và căng thẳng hơn thường lệ.","Tôi cảm thấy bồn chồn và căng thẳng đến mức khó có thể ngồi yên được.","Tôi thấy rất bồn chồn và kích động đến mức liên tục phải đi lại hoặc làm việc gì đó."] },
+            { id: 12, title: "Mất quan tâm ngoại giới", opts: ["Tôi vẫn còn quan tâm đến những người xung quanh hoặc các hoạt động khác.","Tôi ít quan tâm đến mọi người, mọi việc xung quanh hơn trước.","Tôi mất hầu hết sự quan tâm đến mọi người, mọi việc xung quanh.","Tôi không còn quan tâm đến bất kỳ điều gì nữa."] },
+            { id: 13, title: "Khó khăn khi quyết định", opts: ["Tôi quyết định mọi việc cũng tốt như trước.","Tôi thấy khó quyết định mọi việc hơn trước.","Tôi thấy khó quyết định mọi việc hơn trước rất nhiều.","Tôi chẳng còn có thể quyết định được việc gì cả."] },
+            { id: 14, title: "Cảm giác vô dụng", opts: ["Tôi không cảm thấy mình là người vô dụng.","Tôi cho rằng mình không có giá trị và có ích như trước kia.","Tôi cảm thấy mình vô dụng hơn so với những người xung quanh.","Tôi cảm thấy mình là người hoàn toàn vô dụng."] },
+            { id: 15, title: "Mất năng lượng sức lực", opts: ["Tôi thấy mình vẫn tràn đầy sức lực như trước đây.","Sức lực của tôi kém hơn trước.","Tôi không đủ sức lực để làm được nhiều việc nữa.","Tôi không đủ sức lực để làm được bất cứ việc gì nữa."] },
+            { id: 16, title: "Thay đổi giấc ngủ", opts: ["Không thấy có chút thay đổi gì trong giấc ngủ của tôi.","Tôi ngủ hơi nhiều/ít hơn trước một chút.","Tôi ngủ nhiều/ít hơn trước rất nhiều.","Tôi ngủ hầu như suốt ngày hoặc thức giấc quá sớm không ngủ lại được."] },
+            { id: 17, title: "Cáu kỉnh, bực bội", opts: ["Tôi không bị cáu kỉnh và bực bội.","Tôi dễ cáu kỉnh và bực bội hơn trước.","Tôi dễ cáu kỉnh và bực bội hơn trước rất nhiều.","Lúc nào tôi cũng dễ cáu kỉnh và bực bội."] },
+            { id: 18, title: "Thay đổi khẩu vị", opts: ["Tôi ăn vẫn ngon miệng như trước.","Tôi ăn kém ngon miệng hoặc thèm ăn hơn trước một chút.","Tôi ăn kém ngon hoặc quá thèm ăn hơn trước rất nhiều.","Tôi hoàn toàn mất ngon miệng hoặc lúc nào cũng thèm ăn."] },
+            { id: 19, title: "Khó tập trung", opts: ["Tôi có thể tập trung chú ý tốt như trước.","Tôi không thể tập trung chú ý được như trước.","Tôi thấy khó tập trung chú ý lâu được vào bất kỳ điều gì.","Tôi thấy mình không thể tập trung chú ý được vào bất kỳ điều gì nữa."] },
+            { id: 20, title: "Mệt mỏi", opts: ["Tôi không bị mệt mỏi.","Tôi dễ mệt mỏi hơn trước.","Hầu như làm bất kỳ việc gì tôi cũng thấy mệt mỏi.","Tôi quá mệt mỏi khi làm bất kỳ việc gì."] },
+            { id: 21, title: "Hứng thú tình dục", opts: ["Tôi không thấy có thay đổi gì trong hứng thú tình dục.","Tôi ít hứng thú với tình dục hơn trước.","Hiện nay tôi rất ít hứng thú với tình dục.","Tôi hoàn toàn mất hứng thú tình dục."] }
+        ];
+
+        // 2. THANG TRẦM CẢM HAMILTON (HAM-D) - Tính 17 mục đầu tiên
+        const hamdData = [
+            { id: 1, title: "Trạng thái trầm cảm", opts: ["Không có triệu chứng","Có cảm giác buồn chán","Thỉnh thoảng khóc lóc","Khóc liên tục","Các triệu chứng trầm trọng tăng lên qua nét mặt, điệu bộ"] },
+            { id: 2, title: "Cảm giác tội lỗi", opts: ["Không có","Tự chỉ trích bản thân, thấy mình luôn làm mọi người thất vọng","Có ý nghĩ tự buộc tội hoặc suy sụn về những lỗi lầm quá khứ","Nghĩ rằng bệnh hiện tại là do bị trừng phạt, hoang tưởng tội lỗi","Có ảo giác bị buộc tội, chỉ trích"] },
+            { id: 3, title: "Tự sát", opts: ["Không có","Cảm thấy cuộc sống không có ý nghĩa, trống rỗng","Muốn được chết hoặc nghĩ về cái chết","Có ý tưởng hoặc hành vi tự sát tự hủy hoại","Cố ý tự sát dữ dội"] },
+            { id: 4, title: "Mất ngủ - giai đoạn đầu (Khó đi vào giấc ngủ)", opts: ["Không có dấu hiệu","Đôi khi khó ngủ (hơn 30 phút mới ngủ được)","Đêm nào cũng khó ngủ"] },
+            { id: 5, title: "Mất ngủ - giai đoạn giữa (Thức giấc nửa đêm)", opts: ["Không có","Thao thức, hay tỉnh giấc ban đêm","Tỉnh giấc nhiều lần, ra khỏi giường ban đêm (trừ đi tiểu)"] },
+            { id: 6, title: "Mất ngủ - giai đoạn cuối (Thức dậy quá sớm)", opts: ["Không có dấu hiệu","Thức dậy sớm nhưng sau đó ngủ lại được","Thức dậy rất sớm không thể nào ngủ lại được"] },
+            { id: 7, title: "Công việc và hoạt động", opts: ["Không gặp khó khăn gì","Có cảm giác bất lực, bơ phờ, dao động trong công việc","Mất hứng thú vào các sở thích hoặc giảm hoạt động xã hội","Giảm hiệu quả công việc rõ rệt","Không thể làm việc được nữa, phải nghỉ việc"] },
+            { id: 8, title: "Chậm chạp (Tư duy, ngôn ngữ chậm, giảm chú ý)", opts: ["Bình thường","Có một chút chậm chạp khi trả lời câu hỏi","Rất chậm chạp khi khám lâm sàng","Hoàn toàn sững sờ, khó tiếp xúc"] },
+            { id: 9, title: "Kích động (Bồn chồn, vặn tay chân, đứng ngồi không yên)", opts: ["Không có","Hay mân mê tà áo, ngón tay","Luôn bứt rứt vặn tay, giật tóc, đứng ngồi không yên"] },
+            { id: 10, title: "Lo âu tâm lý", opts: ["Không có triệu chứng","Căng thẳng và cáu gắt nhẹ","Lo lắng thái quá vì những điều nhỏ nhặt","Thái độ lo lắng hiện rõ trên khuôn mặt","Hoảng sợ tột độ"] },
+            { id: 11, title: "Lo âu thực thể (Tiêu hóa, tim mạch, đau đầu, vã mồ hôi)", opts: ["Không có","Triệu chứng nhẹ","Triệu chứng rõ rệt","Triệu chứng nghiêm trọng","Mất khả năng sinh hoạt"] },
+            { id: 12, title: "Triệu chứng cơ thể ở hệ tiêu hóa", opts: ["Không có","Ăn không ngon miệng nhưng vẫn cố ăn","Hoàn toàn chán ăn, ăn không tiêu, táo bón nặng"] },
+            { id: 13, title: "Triệu chứng cơ thể chung (Nặng nề tay chân, mệt mỏi)", opts: ["Không có","Cảm giác nặng đầu, mỏi lưng, mỏi cơ gáy nhẹ","Mệt mỏi toàn thân, mất sinh lực rõ rệt"] },
+            { id: 14, title: "Triệu chứng sinh dục (Giảm ham muốn, rối loạn kinh nguyệt)", opts: ["Không có triệu chứng","Triệu chứng mức độ nhẹ","Triệu chứng rõ rệt, mất ham muốn hoàn toàn"] },
+            { id: 15, title: "Nghi bệnh (Quá chú ý đến các triệu chứng cơ thể)", opts: ["Không có dấu hiệu","Quá quan tâm lo lắng đến các cơ quan cơ thể","Quá chú trọng đến sức khỏe, hay phàn nàn bệnh tật","Than phiền liên tục, có xu hướng phóng đại","Có hoang tưởng nghi bệnh cố định"] },
+            { id: 16, title: "Sút cân", opts: ["Không bị sút cân","Sút cân nhẹ (nghi ngờ do bệnh)","Sút cân nhiều rõ rệt (trên 2-3kg/tháng)"] },
+            { id: 17, title: "Nhận thức về bệnh tật", opts: ["Nhận thức tốt mình đang bị bệnh lý","Mất một phần nhận thức (nghĩ mình bị bệnh cơ thể thông thường)","Mất nhận thức hoàn toàn, phủ nhận bản thân bị bệnh"] }
+        ];
+
+        // 3. THANG LO ÂU HAMILTON (HAM-A) - 14 Mục triệu chứng
+        const hamaData = [
+            { id: 1, title: "Trạng thái lo âu (Lo lắng, bứt rứt, đoán điều xấu)", opts: ["Không có","Nhẹ","Trung bình","Nặng","Rất nặng"] },
+            { id: 2, title: "Căng thẳng (Mệt mỏi, hoảng hốt, dễ khóc, run sợ)", opts: ["Không có","Nhẹ","Trung bình","Nặng","Rất nặng"] },
+            { id: 3, title: "Sợ hãi (Sợ bóng tối, người lạ, cô đơn, đám đông)", opts: ["Không có","Nhẹ","Trung bình","Nặng","Rất nặng"] },
+            { id: 4, title: "Mất ngủ (Khó ngủ, thức giấc giữa chừng, ác mộng)", opts: ["Không có","Nhẹ","Trung bình","Nặng","Rất nặng"] },
+            { id: 5, title: "Trí tuệ (Khó tập trung chú ý, trí nhớ suy giảm)", opts: ["Không có","Nhẹ","Trung bình","Nặng","Rất nặng"] },
+            { id: 6, title: "Trạng thái trầm cảm (Mất hứng thú, giảm sút năng lượng)", opts: ["Không có","Nhẹ","Trung bình","Nặng","Rất nặng"] },
+            { id: 7, title: "Triệu chứng thực thể cơ bắp (Đau nhức, co rút, nghiến răng)", opts: ["Không có","Nhẹ","Trung bình","Nặng","Rất nặng"] },
+            { id: 8, title: "Triệu chứng thực thể giác quan (Ù tai, mờ mắt, nóng lạnh)", opts: ["Không có","Nhẹ","Trung bình","Nặng","Rất nặng"] },
+            { id: 9, title: "Triệu chứng tim mạch (Tim đập nhanh, hồi hộp, đánh trống ngực)", opts: ["Không có","Nhẹ","Trung bình","Nặng","Rất nặng"] },
+            { id: 10, title: "Triệu chứng hô hấp (Nặng ngực, cảm giác nghẹt thở, thở dài)", opts: ["Không có","Nhẹ","Trung bình","Nặng","Rất nặng"] },
+            { id: 11, title: "Triệu chứng tiêu hóa (Khó nuốt, đầy hơi, buồn nôn, ợ nóng)", opts: ["Không có","Nhẹ","Trung bình","Nặng","Rất nặng"] },
+            { id: 12, title: "Triệu chứng tiết niệu - sinh dục (Tiểu nhiều, bất lực, rối loạn)", opts: ["Không có","Nhẹ","Trung bình","Nặng","Rất nặng"] },
+            { id: 13, title: "Triệu chứng thần kinh thực vật (Khô miệng, đỏ mặt, vã mồ hôi)", opts: ["Không có","Nhẹ","Trung bình","Nặng","Rất nặng"] },
+            { id: 14, title: "Hành vi khi khám bệnh (Bồn chồn, run rẩy, thở nhanh)", opts: ["Không có","Nhẹ","Trung bình","Nặng","Rất nặng"] }
+        ];
+
+        // 4. THANG ĐÁNH GIÁ LO ÂU ZUNG (20 câu - Có đảo điểm câu thuận/ngược)
+        const zungData = [
+            { id: 1, text: "Tôi cảm thấy nóng nảy, dễ cáu gắt và lo âu hơn thường lệ.", rev: false },
+            { id: 2, text: "Tôi cảm thấy sợ vô cớ.", rev: false },
+            { id: 3, text: "Tôi dễ bối rối và cảm thấy hoảng sợ.", rev: false },
+            { id: 4, text: "Tôi cảm thấy bị suy sụp, vỡ ra từng mảnh.", rev: false },
+            { id: 5, text: "Tôi nghĩ mọi thứ đều tốt và không có điều xấu xảy ra.", rev: true },
+            { id: 6, text: "Tôi bị run tay, chân.", rev: false },
+            { id: 7, text: "Tôi đang khó chịu vì đau đầu, đau cổ, đau lưng.", rev: false },
+            { id: 8, text: "Tôi cảm thấy yếu và dễ mệt mỏi.", rev: false },
+            { id: 9, text: "Tôi có thể bình tĩnh và ngồi yên một cách dễ dàng.", rev: true },
+            { id: 10, text: "Tôi cảm thấy tim mình đập nhanh, hồi hộp, đánh trống ngực.", rev: false },
+            { id: 11, text: "Tôi đang khó chịu vì cơn hoa mắt chóng mặt.", rev: false },
+            { id: 12, text: "Tôi bị ngất và có lúc cảm thấy gần như thế.", rev: false },
+            { id: 13, text: "Tôi có thể hít thở một cách dễ dàng.", rev: true },
+            { id: 14, text: "Tôi cảm thấy tê buốt, như có kiến bò ở đầu ngón tay, chân.", rev: false },
+            { id: 15, text: "Tôi đang khó chịu vì đau dạ dày và đầy bụng.", rev: false },
+            { id: 16, text: "Tôi buồn đi tiểu nhiều.", rev: false },
+            { id: 17, text: "Bàn tay tôi thường khô và ấm.", rev: true },
+            { id: 18, text: "Tôi hay bị nóng bừng, đỏ mặt.", rev: false },
+            { id: 19, text: "Tôi ngủ dễ dàng và có một giấc ngủ tốt.", rev: true },
+            { id: 20, text: "Tôi thường có ác mộng.", rev: false }
+        ];
+        const zungLabels = ["Không có", "Đôi khi", "Thường xuyên", "Luôn luôn"];
+
+        // HÀM KHỞI TẠO VÀ SINH CODE GIAO DIỆN CÂU HỎI TỰ ĐỘNG
+        function initScales() {
+            // Khởi tạo Thang BECK
+            let htmlBeck = '';
+            beckData.forEach((q) => {
+                htmlBeck += `<div class="bg-white p-4 border border-gray-100 shadow-xs rounded-xl flex flex-col gap-2.5">
+                    <p class="text-sm font-bold text-gray-800">${q.id}. ${q.title}</p>
+                    <div class="flex flex-col gap-2">`;
+                q.opts.forEach((opt, idx) => {
+                    htmlBeck += `<label class="flex items-center justify-between p-3 border border-gray-200 rounded-xl text-xs cursor-pointer hover:bg-gray-50 transition" onclick="pickOpt(this, 'b_${q.id}')">
+                        <span class="text-gray-700 font-medium">${opt}</span>
+                        <div class="flex items-center gap-2">
+                            <input type="radio" name="b_${q.id}" value="${idx}" ${idx===0?'checked':''} class="w-4 h-4 text-blue-700">
+                            <span class="bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded border border-gray-300">${idx} đ</span>
+                        </div>
+                    </label>`;
+                });
+                htmlBeck += `</div></div>`;
+            });
+            document.getElementById('scaleArea-beck').innerHTML = htmlBeck;
+
+            // Khởi tạo Thang HAM-D
+            let htmlHamd = '';
+            hamdData.forEach((q) => {
+                htmlHamd += `<div class="bg-white p-4 border border-gray-100 shadow-xs rounded-xl flex flex-col gap-2.5">
+                    <p class="text-sm font-bold text-gray-800">${q.id}. ${q.title}</p>
+                    <div class="flex flex-col gap-2">`;
+                q.opts.forEach((opt, idx) => {
+                    htmlHamd += `<label class="flex items-center justify-between p-3 border border-gray-200 rounded-xl text-xs cursor-pointer hover:bg-gray-50 transition" onclick="pickOpt(this, 'hd_${q.id}')">
+                        <span class="text-gray-700 font-medium">${opt}</span>
+                        <div class="flex items-center gap-2">
+                            <input type="radio" name="hd_${q.id}" value="${idx}" ${idx===0?'checked':''} class="w-4 h-4 text-blue-700">
+                            <span class="bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded border border-gray-300">${idx} đ</span>
+                        </div>
+                    </label>`;
+                });
+                htmlHamd += `</div></div>`;
+            });
+            document.getElementById('scaleArea-hamd').innerHTML = htmlHamd;
+
+            // Khởi tạo Thang HAM-A
+            let htmlHama = '';
+            hamaData.forEach((q) => {
+                htmlHama += `<div class="bg-white p-4 border border-gray-100 shadow-xs rounded-xl flex flex-col gap-2.5">
+                    <p class="text-sm font-bold text-gray-800">${q.id}. ${q.title}</p>
+                    <div class="flex flex-col gap-2">`;
+                q.opts.forEach((opt, idx) => {
+                    htmlHama += `<label class="flex items-center justify-between p-3 border border-gray-200 rounded-xl text-xs cursor-pointer hover:bg-gray-50 transition" onclick="pickOpt(this, 'ha_${q.id}')">
+                        <span class="text-gray-700 font-medium">${opt}</span>
+                        <div class="flex items-center gap-2">
+                            <input type="radio" name="ha_${q.id}" value="${idx}" ${idx===0?'checked':''} class="w-4 h-4 text-blue-700">
+                            <span class="bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded border border-gray-300">${idx} đ</span>
+                        </div>
+                    </label>`;
+                });
+                htmlHama += `</div></div>`;
+            });
+            document.getElementById('scaleArea-hama').innerHTML = htmlHama;
+
+            // Khởi tạo Thang ZUNG
+            let htmlZung = '';
+            zungData.forEach((q) => {
+                htmlZung += `<div class="bg-white p-4 border border-gray-100 shadow-xs rounded-xl flex flex-col gap-2.5">
+                    <p class="text-sm font-bold text-gray-800">${q.id}. ${q.text}</p>
+                    <div class="flex flex-col gap-2">`;
+                zungLabels.forEach((lbl, idx) => {
+                    // Câu thuận tính 1-4đ. Câu ngược tính 4-1đ
+                    const val = q.rev ? (4 - idx) : (idx + 1);
+                    const initChecked = q.rev ? (idx === 3) : (idx === 0);
+                    htmlZung += `<label class="flex items-center justify-between p-3 border border-gray-200 rounded-xl text-xs cursor-pointer hover:bg-gray-50 transition" onclick="pickOpt(this, 'z_${q.id}')">
+                        <span class="text-gray-700 font-medium">${lbl}</span>
+                        <div class="flex items-center gap-2">
+                            <input type="radio" name="z_${q.id}" value="${val}" ${initChecked?'checked':''} class="w-4 h-4 text-blue-700">
+                            <span class="bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded border border-gray-300">${val} đ</span>
+                        </div>
+                    </label>`;
+                });
+                htmlZung += `</div></div>`;
+            });
+            document.getElementById('scaleArea-zung').innerHTML = htmlZung;
+            
+            // Đánh dấu highlight cho các câu mặc định đầu tiên
+            document.querySelectorAll('input:checked').forEach(i => {
+                i.closest('label').classList.add('border-blue-600', 'bg-blue-50/50');
+            });
+        }
+
+        // Click chọn đáp án
+        function pickOpt(el, radioName) {
+            const wrapper = el.closest('.flex-col');
+            wrapper.querySelectorAll('label').forEach(lbl => {
+                lbl.classList.remove('border-blue-600', 'bg-blue-50/50');
+            });
+            el.classList.add('border-blue-600', 'bg-blue-50/50');
+            el.querySelector('input').checked = true;
+        }
+
+        // Chuyển tab nhanh giữa các thang điểm ở Trang 2
+        function switchScale(scaleCode) {
+            document.querySelectorAll('.scale-section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`scaleArea-${scaleCode}`).classList.remove('hidden');
+
+            document.querySelectorAll('[id^="tabBtn-"]').forEach(b => {
+                b.classList.remove('bg-white', 'shadow', 'text-blue-700');
+            });
+            document.getElementById(`tabBtn-${scaleCode}`).classList.add('bg-white', 'shadow', 'text-blue-700');
+        }
+
+        // HÀM ĐIỀU HƯỚNG SANG TRANG (Hành chính -> Câu hỏi -> Kết quả)
+        function movePage(offset) {
+            if (currentPage === 1 && offset === 1) {
+                if (!document.getElementById('patientName').value.trim()) {
+                    alert('Xin vui lòng điền Họ tên bệnh nhân trước khi làm test.');
+                    return;
+                }
+            }
+
+            document.getElementById(`step${currentPage}`).classList.remove('active');
+            currentPage += offset;
+            document.getElementById(`step${currentPage}`).classList.add('active');
+
+            // Khi chuyển tới trang kết quả, đồng bộ hóa dữ liệu hành chính và tính tổng điểm
+            if (currentPage === 3) {
+                document.getElementById('outId').innerText = document.getElementById('patientId').value || "---";
+                document.getElementById('outName').innerText = document.getElementById('patientName').value;
+                document.getElementById('outAge').innerText = document.getElementById('patientAge').value || "---";
+                document.getElementById('outGender').innerText = document.getElementById('patientGender').value;
+                document.getElementById('outRoom').innerText = document.getElementById('patientRoom').value || "---";
+                document.getElementById('outBed').innerText = document.getElementById('patientBed').value || "---";
+                document.getElementById('outDiag').innerText = document.getElementById('patientDiag').value || "Chưa có chẩn đoán sơ bộ";
+                
+                runEvaluation();
+            }
+
+            updateNavBars();
+        }
+
+        function updateNavBars() {
+            const btnPrev = document.getElementById('btnPrev');
+            const btnNext = document.getElementById('btnNext');
+            const btnPrint = document.getElementById('btnPrint');
+
+            if (currentPage === 1) {
+                btnPrev.classList.add('invisible');
+            } else {
+                btnPrev.classList.remove('invisible');
+            }
+
+            if (currentPage === 3) {
+                btnNext.innerText = "Hoàn tất";
+                btnNext.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                btnNext.classList.remove('bg-blue-700', 'hover:bg-blue-800');
+                
+                // Mở khóa nút In ấn
+                btnPrint.removeAttribute('disabled');
+                btnPrint.classList.remove('opacity-40', 'cursor-not-allowed');
+                btnPrint.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
+            } else {
+                btnNext.innerText = "Tiếp theo";
+                btnNext.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+                btnNext.classList.add('bg-blue-700', 'hover:bg-blue-800');
+
+                // Khóa nút In ấn
+                btnPrint.setAttribute('disabled', 'true');
+                btnPrint.classList.add('opacity-40', 'cursor-not-allowed');
+                btnPrint.classList.remove('bg-emerald-600', 'hover:bg-emerald-500');
+            }
+        }
+
+        // HÀM TỰ ĐỘNG TÍNH ĐIỂM VÀ ĐÁNH GIÁ CHẨN ĐOÁN LÂM SÀNG CỦA FILE QUY ĐỊNH
+        function runEvaluation() {
+            // 1. Tính Thang BECK
+            let totalBeck = 0;
+            document.querySelectorAll('input[name^="b_"]:checked').forEach(i => totalBeck += parseInt(i.value));
+            document.getElementById('score-beck').innerText = totalBeck + ' đ';
+            let txtBeck = "Không có trầm cảm"; let clsBeck = "bg-green-50";
+            if (totalBeck >= 14 && totalBeck <= 19) { txtBeck = "Trầm cảm nhẹ"; clsBeck = "bg-yellow-50"; }
+            else if (totalBeck >= 20 && totalBeck <= 29) { txtBeck = "Trầm cảm vừa"; clsBeck = "bg-orange-50"; }
+            else if (totalBeck >= 30) { txtBeck = "Trầm cảm nặng"; clsBeck = "bg-red-50"; }
+            document.getElementById('lbl-beck').innerText = txtBeck;
+            document.getElementById('card-beck').className = `border rounded-xl p-4 flex justify-between items-center ${clsBeck}`;
+
+            // 2. Tính Thang HAM-D (Trầm cảm)
+            let totalHamd = 0;
+            document.querySelectorAll('input[name^="hd_"]:checked').forEach(i => totalHamd += parseInt(i.value));
+            document.getElementById('score-hamd').innerText = totalHamd + ' đ';
+            let txtHamd = "Không có triệu chứng trầm cảm"; let clsHamd = "bg-green-50";
+            if (totalHamd >= 7 && totalHamd <= 17) { txtHamd = "Trầm cảm mức độ nhẹ"; clsHamd = "bg-yellow-50"; }
+            else if (totalHamd >= 18 && totalHamd <= 24) { txtHamd = "Trầm cảm mức độ vừa"; clsHamd = "bg-orange-50"; }
+            else if (totalHamd >= 25) { txtHamd = "Trầm cảm mức độ nặng"; clsHamd = "bg-red-50"; }
+            document.getElementById('lbl-hamd').innerText = txtHamd;
+            document.getElementById('card-hamd').className = `border rounded-xl p-4 flex justify-between items-center ${clsHamd}`;
+
+            // 3. Tính Thang HAM-A (Lo âu)
+            let totalHama = 0;
+            document.querySelectorAll('input[name^="ha_"]:checked').forEach(i => totalHama += parseInt(i.value));
+            document.getElementById('score-hama').innerText = totalHama + ' đ';
+            let txtHama = "Không có lo âu bệnh lý"; let clsHama = "bg-green-50";
+            if (totalHama >= 7 && totalHama <= 18) { txtHama = "Lo âu mức độ nhẹ đến trung bình"; clsHama = "bg-yellow-50"; }
+            else if (totalHama >= 19) { txtHama = "Lo âu mức độ nặng"; clsHama = "bg-red-50"; }
+            document.getElementById('lbl-hama').innerText = txtHama;
+            document.getElementById('card-hama').className = `border rounded-xl p-4 flex justify-between items-center ${clsHama}`;
+
+            // 4. Tính Thang ZUNG (Lo âu)
+            let totalZung = 0;
+            document.querySelectorAll('input[name^="z_"]:checked').forEach(i => totalZung += parseInt(i.value));
+            document.getElementById('score-zung').innerText = totalZung + ' đ';
+            let txtZung = "Không có lo âu bệnh lý"; let clsZung = "bg-green-50";
+            if (totalZung >= 45 && totalZung <= 59) { txtZung = "Lo âu mức độ nhẹ đến trung bình"; clsZung = "bg-yellow-50"; }
+            else if (totalZung >= 60 && totalZung <= 74) { txtZung = "Lo âu mức độ nặng"; clsZung = "bg-orange-50"; }
+            else if (totalZung >= 75) { txtZung = "Lo âu mức độ rất nặng"; clsZung = "bg-red-50"; }
+            document.getElementById('lbl-zung').innerText = txtZung;
+            document.getElementById('card-zung').className = `border rounded-xl p-4 flex justify-between items-center ${clsZung}`;
+        }
+
+        window.onload = initScales;
+    </script>
+</body>
+</html>
