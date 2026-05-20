@@ -1,1 +1,1 @@
-# mental-scale-app
+# mental-team-app
